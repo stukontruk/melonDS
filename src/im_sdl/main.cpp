@@ -21,12 +21,15 @@
 #include <stdio.h>
 
 #include <SDL2/SDL.h>
+#include <GL/gl.h>
+#include <GL/glext.h>
 
 #include "../types.h"
 #include "../version.h"
 
 
 SDL_Window* MainWindow;
+SDL_GLContext MainGL;
 
 void RunMainWindow();
 
@@ -94,6 +97,7 @@ void RunMainWindow()
                                   SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
                                   640, 480,
                                   SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+    MainGL=  SDL_GL_CreateContext(MainWindow);
 
     // event loop
     bool run = true;
@@ -115,8 +119,12 @@ void RunMainWindow()
         }
 
         // do extra shit here
+        glClearColor(1, 0, 1, 1);
+        glClear(GL_COLOR_BUFFER_BIT);
+        SDL_GL_SwapWindow(MainWindow);
         SDL_Delay(50);
     }
 
+    SDL_GL_DeleteContext(MainGL);
     SDL_DestroyWindow(MainWindow);
 }
