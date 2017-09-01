@@ -23,7 +23,12 @@
 #include <SDL2/SDL.h>
 
 #include "../types.h"
+#include "../version.h"
 
+
+SDL_Window* MainWindow;
+
+void RunMainWindow();
 
 
 int main(int argc, char** argv)
@@ -39,8 +44,7 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    // shit here
-    printf("burp\n");
+    RunMainWindow();
 
     SDL_Quit();
     return 0;
@@ -80,3 +84,37 @@ int CALLBACK WinMain(HINSTANCE hinst, HINSTANCE hprev, LPSTR cmdline, int cmdsho
 }
 
 #endif
+
+
+void RunMainWindow()
+{
+    MainWindow = SDL_CreateWindow("melonDS " MELONDS_VERSION,
+                                  SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+                                  640, 480,
+                                  SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+
+    // event loop
+    bool run = true;
+    while (run)
+    {
+        SDL_Event evt;
+        while (SDL_PollEvent(&evt))
+        {
+            switch (evt.type)
+            {
+            case SDL_WINDOWEVENT:
+                if (evt.window.event == SDL_WINDOWEVENT_CLOSE)
+                {
+                    run = false;
+                    break;
+                }
+                break;
+            }
+        }
+
+        // do extra shit here
+        SDL_Delay(50);
+    }
+
+    SDL_DestroyWindow(MainWindow);
+}
