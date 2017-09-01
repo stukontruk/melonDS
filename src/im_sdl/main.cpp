@@ -68,6 +68,7 @@ int CALLBACK WinMain(HINSTANCE hinst, HINSTANCE hprev, LPSTR cmdline, int cmdsho
         if (c == '"') inquote = !inquote;
         if (!inquote && c==' ')
         {
+            if (j > 255) j = 255;
             if (arg < 16) cmdargs[arg][j] = '\0';
             arg++;
             j = 0;
@@ -78,6 +79,7 @@ int CALLBACK WinMain(HINSTANCE hinst, HINSTANCE hprev, LPSTR cmdline, int cmdsho
             j++;
         }
     }
+    if (j > 255) j = 255;
     if (arg < 16) cmdargs[arg][j] = '\0';
 
     return main(arg, (char**)cmdargs);
