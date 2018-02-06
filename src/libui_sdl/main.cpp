@@ -1012,6 +1012,26 @@ bool _fileexists(char* name)
     return true;
 }
 
+#include <windows.h>
+void dyna_test()
+{
+    //u8* code = new u8[64];
+    u8* code = (u8*)VirtualAlloc(NULL, 64, MEM_COMMIT|MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+    printf("code=%lp\n", code);
+
+    u8* ptr = code;
+    *ptr++ = 0xB8;
+    *ptr++ = 0x78;
+    *ptr++ = 0x56;
+    *ptr++ = 0x34;
+    *ptr++ = 0x12;
+    *ptr++ = 0xC3;
+
+    u32 (*codefun)() = (u32(*)())code;
+    u32 res = codefun();
+    printf("code res: %08X\n", res);
+}
+
 
 int main(int argc, char** argv)
 {
@@ -1019,6 +1039,8 @@ int main(int argc, char** argv)
 
     printf("melonDS " MELONDS_VERSION "\n");
     printf(MELONDS_URL "\n");
+
+    dyna_test();
 
     // http://stackoverflow.com/questions/14543333/joystick-wont-work-using-sdl
     SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS, "1");
