@@ -98,13 +98,22 @@ public:
         // TODO eventually: on ARM9, THUMB opcodes are prefetched with 32bit reads
         if (!Num)
         {
-            if (!CP15::HandleCodeRead16(addr, &val))
+            if (CP15::HandleCodeRead16(addr, &val))
+            {
+                Cycles++; // cache/TCM access time
+            }
+            else
+            {
                 val = NDS::ARM9Read16(addr);
+                Cycles += NDS::CodeAccessTimes[0][2][addr>>24];
+            }
         }
         else
+        {
             val = NDS::ARM7Read16(addr);
+            Cycles += NDS::CodeAccessTimes[1][1][addr>>24];
+        }
 
-        Cycles += Waitstates[0][(addr>>24)&0xF];
         return val;
     }
 
@@ -113,13 +122,22 @@ public:
         u32 val;
         if (!Num)
         {
-            if (!CP15::HandleCodeRead32(addr, &val))
+            if (CP15::HandleCodeRead32(addr, &val))
+            {
+                Cycles++; // cache/TCM access time
+            }
+            else
+            {
                 val = NDS::ARM9Read32(addr);
+                Cycles += NDS::CodeAccessTimes[0][2][addr>>24] << 1;
+            }
         }
         else
+        {
             val = NDS::ARM7Read32(addr);
+            Cycles += NDS::CodeAccessTimes[1][3][addr>>24];
+        }
 
-        Cycles += Waitstates[1][(addr>>24)&0xF];
         return val;
     }
 
@@ -129,13 +147,22 @@ public:
         u8 val;
         if (!Num)
         {
-            if (!CP15::HandleDataRead8(addr, &val, forceuser))
+            if (CP15::HandleDataRead8(addr, &val, forceuser))
+            {
+                Cycles++; // cache/TCM access time
+            }
+            else
+            {
                 val = NDS::ARM9Read8(addr);
+                Cycles += NDS::DataAccessTimes[0][0][addr>>24] << 1;
+            }
         }
         else
+        {
             val = NDS::ARM7Read8(addr);
+            Cycles += NDS::DataAccessTimes[1][0][addr>>24];
+        }
 
-        Cycles += Waitstates[2][(addr>>24)&0xF];
         return val;
     }
 
@@ -145,13 +172,22 @@ public:
         addr &= ~1;
         if (!Num)
         {
-            if (!CP15::HandleDataRead16(addr, &val, forceuser))
+            if (CP15::HandleDataRead16(addr, &val, forceuser))
+            {
+                Cycles++; // cache/TCM access time
+            }
+            else
+            {
                 val = NDS::ARM9Read16(addr);
+                Cycles += NDS::DataAccessTimes[0][0][addr>>24] << 1;
+            }
         }
         else
+        {
             val = NDS::ARM7Read16(addr);
+            Cycles += NDS::DataAccessTimes[1][0][addr>>24];
+        }
 
-        Cycles += Waitstates[2][(addr>>24)&0xF];
         return val;
     }
 
@@ -161,13 +197,22 @@ public:
         addr &= ~3;
         if (!Num)
         {
-            if (!CP15::HandleDataRead32(addr, &val, forceuser))
+            if (CP15::HandleDataRead32(addr, &val, forceuser))
+            {
+                Cycles++; // cache/TCM access time
+            }
+            else
+            {
                 val = NDS::ARM9Read32(addr);
+                Cycles += NDS::DataAccessTimes[0][2][addr>>24] << 1;
+            }
         }
         else
+        {
             val = NDS::ARM7Read32(addr);
+            Cycles += NDS::DataAccessTimes[1][2][addr>>24];
+        }
 
-        Cycles += Waitstates[3][(addr>>24)&0xF];
         return val;
     }
 
@@ -175,13 +220,21 @@ public:
     {
         if (!Num)
         {
-            if (!CP15::HandleDataWrite8(addr, val, forceuser))
+            if (CP15::HandleDataWrite8(addr, val, forceuser))
+            {
+                Cycles++; // cache/TCM access time
+            }
+            else
+            {
                 NDS::ARM9Write8(addr, val);
+                Cycles += NDS::DataAccessTimes[0][0][addr>>24] << 1;
+            }
         }
         else
+        {
             NDS::ARM7Write8(addr, val);
-
-        Cycles += Waitstates[2][(addr>>24)&0xF];
+            Cycles += NDS::DataAccessTimes[1][0][addr>>24];
+        }
     }
 
     void DataWrite16(u32 addr, u16 val, u32 forceuser=0)
@@ -189,13 +242,21 @@ public:
         addr &= ~1;
         if (!Num)
         {
-            if (!CP15::HandleDataWrite16(addr, val, forceuser))
+            if (CP15::HandleDataWrite16(addr, val, forceuser))
+            {
+                Cycles++; // cache/TCM access time
+            }
+            else
+            {
                 NDS::ARM9Write16(addr, val);
+                Cycles += NDS::DataAccessTimes[0][0][addr>>24] << 1;
+            }
         }
         else
+        {
             NDS::ARM7Write16(addr, val);
-
-        Cycles += Waitstates[2][(addr>>24)&0xF];
+            Cycles += NDS::DataAccessTimes[1][0][addr>>24];
+        }
     }
 
     void DataWrite32(u32 addr, u32 val, u32 forceuser=0)
@@ -203,22 +264,25 @@ public:
         addr &= ~3;
         if (!Num)
         {
-            if (!CP15::HandleDataWrite32(addr, val, forceuser))
+            if (CP15::HandleDataWrite32(addr, val, forceuser))
+            {
+                Cycles++; // cache/TCM access time
+            }
+            else
+            {
                 NDS::ARM9Write32(addr, val);
+                Cycles += NDS::DataAccessTimes[0][2][addr>>24] << 1;
+            }
         }
         else
+        {
             NDS::ARM7Write32(addr, val);
-
-        Cycles += Waitstates[3][(addr>>24)&0xF];
+            Cycles += NDS::DataAccessTimes[1][2][addr>>24];
+        }
     }
 
 
     u32 Num;
-
-    // waitstates:
-    // 0=code16 1=code32 2=data16 3=data32
-    // TODO eventually: nonsequential waitstates
-    s32 Waitstates[4][16];
 
     s32 Cycles;
     s32 CyclesToRun;

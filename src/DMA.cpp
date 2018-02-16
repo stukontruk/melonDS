@@ -26,6 +26,9 @@
 // NOTES ON DMA SHIT
 //
 // * could use optimized code paths for common types of DMA transfers. for example, VRAM
+// * TODO: DMA start delay (2I cycles, or 4I for GBA cart, they say) and initial N cycles
+// * TODO: work out which cases allow simultaneous read/write
+//   -> probably when using different buses (ie. RAM->OAM but not RAM->palette)
 
 
 DMA::DMA(u32 cpu, u32 num)
@@ -37,61 +40,6 @@ DMA::DMA(u32 cpu, u32 num)
         CountMask = 0x001FFFFF;
     else
         CountMask = (num==3 ? 0x0000FFFF : 0x00003FFF);
-
-    // TODO: merge with the one in ARM.cpp, somewhere
-    for (int i = 0; i < 16; i++)
-    {
-        Waitstates[0][i] = 1;
-        Waitstates[1][i] = 1;
-    }
-
-    if (!cpu)
-    {
-        // ARM9
-        // note: 33MHz cycles
-        Waitstates[0][0x2] = 1;
-        Waitstates[0][0x3] = 1;
-        Waitstates[0][0x4] = 1;
-        Waitstates[0][0x5] = 1;
-        Waitstates[0][0x6] = 1;
-        Waitstates[0][0x7] = 1;
-        Waitstates[0][0x8] = 6;
-        Waitstates[0][0x9] = 6;
-        Waitstates[0][0xA] = 10;
-        Waitstates[0][0xF] = 1;
-
-        Waitstates[1][0x2] = 2;
-        Waitstates[1][0x3] = 1;
-        Waitstates[1][0x4] = 1;
-        Waitstates[1][0x5] = 2;
-        Waitstates[1][0x6] = 2;
-        Waitstates[1][0x7] = 1;
-        Waitstates[1][0x8] = 12;
-        Waitstates[1][0x9] = 12;
-        Waitstates[1][0xA] = 10;
-        Waitstates[1][0xF] = 1;
-    }
-    else
-    {
-        // ARM7
-        Waitstates[0][0x0] = 1;
-        Waitstates[0][0x2] = 1;
-        Waitstates[0][0x3] = 1;
-        Waitstates[0][0x4] = 1;
-        Waitstates[0][0x6] = 1;
-        Waitstates[0][0x8] = 6;
-        Waitstates[0][0x9] = 6;
-        Waitstates[0][0xA] = 10;
-
-        Waitstates[1][0x0] = 1;
-        Waitstates[1][0x2] = 2;
-        Waitstates[1][0x3] = 1;
-        Waitstates[1][0x4] = 1;
-        Waitstates[1][0x6] = 2;
-        Waitstates[1][0x8] = 12;
-        Waitstates[1][0x9] = 12;
-        Waitstates[1][0xA] = 10;
-    }
 
     Reset();
 }
@@ -205,11 +153,15 @@ s32 DMA::Run(s32 cycles)
         u16 (*readfn)(u32) = CPU ? NDS::ARM7Read16 : NDS::ARM9Read16;
         void (*writefn)(u32,u16) = CPU ? NDS::ARM7Write16 : NDS::ARM9Write16;
 
+        // TODO/FIXME: hope src/dst don't cross memory regions...
+        // TODO: they say that in certain cases it can read and write at the same time
+        // (resulting in max(src,dst) instead of src+dst??)
+        s32 c = NDS::DataAccessTimes[CPU][1][CurSrcAddr>>24] + NDS::DataAccessTimes[CPU][1][CurDstAddr>>24];
+
         while (IterCount > 0 && cycles > 0)
         {
             writefn(CurDstAddr, readfn(CurSrcAddr));
 
-            s32 c = (Waitstates[0][(CurSrcAddr >> 24) & 0xF] + Waitstates[0][(CurDstAddr >> 24) & 0xF]);
             cycles -= c;
             NDS::RunTimingCriticalDevices(CPU, c);
 
@@ -224,11 +176,12 @@ s32 DMA::Run(s32 cycles)
         // optimized path for typical GXFIFO DMA
         if (IsGXFIFODMA)
         {
+            s32 c = NDS::DataAccessTimes[CPU][3][0x02] + NDS::DataAccessTimes[CPU][3][0x04];
+
             while (IterCount > 0 && cycles > 0)
             {
                 GPU3D::WriteToGXFIFO(*(u32*)&NDS::MainRAM[CurSrcAddr&0x3FFFFF]);
 
-                s32 c = (Waitstates[1][0x2] + Waitstates[1][0x4]);
                 cycles -= c;
                 NDS::RunTimingCriticalDevices(0, c);
 
@@ -241,11 +194,15 @@ s32 DMA::Run(s32 cycles)
         u32 (*readfn)(u32) = CPU ? NDS::ARM7Read32 : NDS::ARM9Read32;
         void (*writefn)(u32,u32) = CPU ? NDS::ARM7Write32 : NDS::ARM9Write32;
 
+        // TODO/FIXME: hope src/dst don't cross memory regions...
+        // TODO: they say that in certain cases it can read and write at the same time
+        // (resulting in max(src,dst) instead of src+dst??)
+        s32 c = NDS::DataAccessTimes[CPU][3][CurSrcAddr>>24] + NDS::DataAccessTimes[CPU][3][CurDstAddr>>24];
+
         while (IterCount > 0 && cycles > 0)
         {
             writefn(CurDstAddr, readfn(CurSrcAddr));
 
-            s32 c = (Waitstates[1][(CurSrcAddr >> 24) & 0xF] + Waitstates[1][(CurDstAddr >> 24) & 0xF]);
             cycles -= c;
             NDS::RunTimingCriticalDevices(CPU, c);
 

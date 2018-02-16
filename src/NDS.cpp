@@ -53,6 +53,10 @@ u32 SchedListMask;
 
 u32 CPUStop;
 
+// N16, S16, N32, S32
+u8 CodeAccessTimes[2][4][256];
+u8 DataAccessTimes[2][4][256];
+
 u8 ARM9BIOS[0x1000];
 u8 ARM7BIOS[0x4000];
 
@@ -134,6 +138,69 @@ bool Init()
     if (!SPI::Init()) return false;
     if (!RTC::Init()) return false;
     if (!Wifi::Init()) return false;
+
+    // timing notes:
+    // * in the lack of cache emulation, ARM9 timings are made artifically-fast
+    //   for typically cached regions (main RAM, BIOS)
+
+    memset(CodeAccessTimes, 0, 2*4*256);
+    memset(DataAccessTimes, 0, 2*4*256);
+
+#define SETACCESSTIME(type, cpu, rgn, N, S16, S32) \
+    type##AccessTimes[cpu][0][rgn] = N+S16; \
+    type##AccessTimes[cpu][1][rgn] = S16; \
+    type##AccessTimes[cpu][2][rgn] = N+S32; \
+    type##AccessTimes[cpu][3][rgn] = S32;
+
+    // ARM9 code access times
+    // note: we only store the N32 access time as it's all we need
+    // (ARM9 normally uses N32 fetches for all opcodes, including THUMB opcodes fetched 2 by 2)
+    //SETACCESSTIME(Code, 0, 0x02, 9, 0, 0);
+    SETACCESSTIME(Code, 0, 0x02, 1, 0, 0);
+    SETACCESSTIME(Code, 0, 0x03, 4, 0, 0);
+    SETACCESSTIME(Code, 0, 0x04, 4, 0, 0);
+    SETACCESSTIME(Code, 0, 0x05, 5, 0, 0);
+    SETACCESSTIME(Code, 0, 0x06, 5, 0, 0);
+    SETACCESSTIME(Code, 0, 0x07, 4, 0, 0);
+    SETACCESSTIME(Code, 0, 0x08, 19, 0, 0);
+    SETACCESSTIME(Code, 0, 0x09, 19, 0, 0);
+    //SETACCESSTIME(Code, 0, 0xFF, 4, 0, 0);
+    SETACCESSTIME(Code, 0, 0xFF, 1, 0, 0);
+
+    // ARM7 code access times
+    SETACCESSTIME(Code, 1, 0x00, 0, 1, 1);
+    SETACCESSTIME(Code, 1, 0x02, 7, 1, 2);
+    SETACCESSTIME(Code, 1, 0x03, 0, 1, 1);
+    SETACCESSTIME(Code, 1, 0x04, 0, 1, 1);
+    SETACCESSTIME(Code, 1, 0x06, 0, 1, 2);
+    SETACCESSTIME(Code, 1, 0x08, 4, 6, 12);
+    SETACCESSTIME(Code, 1, 0x09, 4, 6, 12);
+
+    // ARM9 data access times
+    //SETACCESSTIME(Data, 0, 0x02, 8, 1, 2);
+    SETACCESSTIME(Data, 0, 0x02, 0, 1, 2);
+    SETACCESSTIME(Data, 0, 0x03, 3, 1, 1);
+    SETACCESSTIME(Data, 0, 0x04, 3, 1, 1);
+    SETACCESSTIME(Data, 0, 0x05, 3, 1, 2);
+    SETACCESSTIME(Data, 0, 0x06, 3, 1, 2);
+    SETACCESSTIME(Data, 0, 0x07, 3, 1, 1);
+    SETACCESSTIME(Data, 0, 0x08, 7, 6, 12);
+    SETACCESSTIME(Data, 0, 0x09, 7, 6, 12);
+    SETACCESSTIME(Data, 0, 0x0A, 3, 10, 10);
+    //SETACCESSTIME(Data, 0, 0xFF, 3, 1, 1);
+    SETACCESSTIME(Data, 0, 0xFF, 0, 1, 1);
+
+    // ARM7 data access times
+    SETACCESSTIME(Data, 1, 0x00, 0, 1, 1);
+    SETACCESSTIME(Data, 1, 0x02, 8, 1, 2);
+    SETACCESSTIME(Data, 1, 0x03, 0, 1, 1);
+    SETACCESSTIME(Data, 1, 0x04, 0, 1, 1);
+    SETACCESSTIME(Data, 1, 0x06, 0, 1, 2);
+    SETACCESSTIME(Data, 1, 0x08, 3, 6, 12);
+    SETACCESSTIME(Data, 1, 0x09, 3, 6, 12);
+    SETACCESSTIME(Data, 1, 0x0A, 0, 10, 10); // ?????
+
+#undef SETACCESSTIME
 
     return true;
 }
