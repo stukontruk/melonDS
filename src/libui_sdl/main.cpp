@@ -1025,6 +1025,25 @@ void dyna_test()
     *ptr++ = 0x56;
     *ptr++ = 0x34;
     *ptr++ = 0x12;
+
+    *ptr++ = 0x48;
+    *ptr++ = 0xC1;
+    *ptr++ = 0xE0;
+    *ptr++ = 0x20;
+    //*ptr++ = 0x50;
+
+    /**ptr++ = 0xB8;
+    *ptr++ = 0x44;
+    *ptr++ = 0x44;
+    *ptr++ = 0x44;
+    *ptr++ = 0x44;*/
+
+    *ptr++ = 0x48;
+    *ptr++ = 0xC1;
+    *ptr++ = 0xE8;
+    *ptr++ = 0x20;
+    //*ptr++ = 0x58;
+
     *ptr++ = 0xC3;
 
     u32 (*codefun)() = (u32(*)())code;
