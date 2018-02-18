@@ -305,11 +305,21 @@ public:
     u32 debug;
 };
 
+// blarg
+
 namespace ARMInterpreter
 {
 
 void A_UNK(ARM* cpu);
 void T_UNK(ARM* cpu);
+
+}
+
+namespace ARMJIT
+{
+
+void A_UNK(ARM* cpu, u32 pc, u32 instr);
+void T_UNK(ARM* cpu, u32 pc, u32 instr);
 
 }
 

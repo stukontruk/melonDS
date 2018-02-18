@@ -24,8 +24,6 @@
 
 // SPU TODO
 // * loop mode 3, what does it do?
-// * the FIFO, whatever it is. GBAtek mentions it but gives no details.
-// * consider mixing every sample instead of every 16?
 
 
 namespace SPU

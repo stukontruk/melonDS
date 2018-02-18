@@ -139,92 +139,92 @@ namespace ARMJIT
 
 #define A_IMPLEMENT_ALU_OP(x,s) \
 \
-void A_##x##_IMM(ARM* cpu) \
+void A_##x##_IMM(ARM* cpu, u32 pc, u32 instr) \
 { \
     A_CALC_OP2_IMM \
     A_##x(0) \
 } \
-void A_##x##_REG_LSL_IMM(ARM* cpu) \
+void A_##x##_REG_LSL_IMM(ARM* cpu, u32 pc, u32 instr) \
 { \
     A_CALC_OP2_REG_SHIFT_IMM(LSL_IMM) \
     A_##x(0) \
 } \
-void A_##x##_REG_LSR_IMM(ARM* cpu) \
+void A_##x##_REG_LSR_IMM(ARM* cpu, u32 pc, u32 instr) \
 { \
     A_CALC_OP2_REG_SHIFT_IMM(LSR_IMM) \
     A_##x(0) \
 } \
-void A_##x##_REG_ASR_IMM(ARM* cpu) \
+void A_##x##_REG_ASR_IMM(ARM* cpu, u32 pc, u32 instr) \
 { \
     A_CALC_OP2_REG_SHIFT_IMM(ASR_IMM) \
     A_##x(0) \
 } \
-void A_##x##_REG_ROR_IMM(ARM* cpu) \
+void A_##x##_REG_ROR_IMM(ARM* cpu, u32 pc, u32 instr) \
 { \
     A_CALC_OP2_REG_SHIFT_IMM(ROR_IMM) \
     A_##x(0) \
 } \
-void A_##x##_REG_LSL_REG(ARM* cpu) \
+void A_##x##_REG_LSL_REG(ARM* cpu, u32 pc, u32 instr) \
 { \
     A_CALC_OP2_REG_SHIFT_REG(LSL_REG) \
     A_##x(1) \
 } \
-void A_##x##_REG_LSR_REG(ARM* cpu) \
+void A_##x##_REG_LSR_REG(ARM* cpu, u32 pc, u32 instr) \
 { \
     A_CALC_OP2_REG_SHIFT_REG(LSR_REG) \
     A_##x(1) \
 } \
-void A_##x##_REG_ASR_REG(ARM* cpu) \
+void A_##x##_REG_ASR_REG(ARM* cpu, u32 pc, u32 instr) \
 { \
     A_CALC_OP2_REG_SHIFT_REG(ASR_REG) \
     A_##x(1) \
 } \
-void A_##x##_REG_ROR_REG(ARM* cpu) \
+void A_##x##_REG_ROR_REG(ARM* cpu, u32 pc, u32 instr) \
 { \
     A_CALC_OP2_REG_SHIFT_REG(ROR_REG) \
     A_##x(1) \
 } \
-void A_##x##_IMM_S(ARM* cpu) \
+void A_##x##_IMM_S(ARM* cpu, u32 pc, u32 instr) \
 { \
     A_CALC_OP2_IMM \
     A_##x##_S(0) \
 } \
-void A_##x##_REG_LSL_IMM_S(ARM* cpu) \
+void A_##x##_REG_LSL_IMM_S(ARM* cpu, u32 pc, u32 instr) \
 { \
     A_CALC_OP2_REG_SHIFT_IMM(LSL_IMM##s) \
     A_##x##_S(0) \
 } \
-void A_##x##_REG_LSR_IMM_S(ARM* cpu) \
+void A_##x##_REG_LSR_IMM_S(ARM* cpu, u32 pc, u32 instr) \
 { \
     A_CALC_OP2_REG_SHIFT_IMM(LSR_IMM##s) \
     A_##x##_S(0) \
 } \
-void A_##x##_REG_ASR_IMM_S(ARM* cpu) \
+void A_##x##_REG_ASR_IMM_S(ARM* cpu, u32 pc, u32 instr) \
 { \
     A_CALC_OP2_REG_SHIFT_IMM(ASR_IMM##s) \
     A_##x##_S(0) \
 } \
-void A_##x##_REG_ROR_IMM_S(ARM* cpu) \
+void A_##x##_REG_ROR_IMM_S(ARM* cpu, u32 pc, u32 instr) \
 { \
     A_CALC_OP2_REG_SHIFT_IMM(ROR_IMM##s) \
     A_##x##_S(0) \
 } \
-void A_##x##_REG_LSL_REG_S(ARM* cpu) \
+void A_##x##_REG_LSL_REG_S(ARM* cpu, u32 pc, u32 instr) \
 { \
     A_CALC_OP2_REG_SHIFT_REG(LSL_REG##s) \
     A_##x##_S(1) \
 } \
-void A_##x##_REG_LSR_REG_S(ARM* cpu) \
+void A_##x##_REG_LSR_REG_S(ARM* cpu, u32 pc, u32 instr) \
 { \
     A_CALC_OP2_REG_SHIFT_REG(LSR_REG##s) \
     A_##x##_S(1) \
 } \
-void A_##x##_REG_ASR_REG_S(ARM* cpu) \
+void A_##x##_REG_ASR_REG_S(ARM* cpu, u32 pc, u32 instr) \
 { \
     A_CALC_OP2_REG_SHIFT_REG(ASR_REG##s) \
     A_##x##_S(1) \
 } \
-void A_##x##_REG_ROR_REG_S(ARM* cpu) \
+void A_##x##_REG_ROR_REG_S(ARM* cpu, u32 pc, u32 instr) \
 { \
     A_CALC_OP2_REG_SHIFT_REG(ROR_REG##s) \
     A_##x##_S(1) \
@@ -232,47 +232,47 @@ void A_##x##_REG_ROR_REG_S(ARM* cpu) \
 
 #define A_IMPLEMENT_ALU_TEST(x,s) \
 \
-void A_##x##_IMM(ARM* cpu) \
+void A_##x##_IMM(ARM* cpu, u32 pc, u32 instr) \
 { \
     A_CALC_OP2_IMM \
     A_##x(0) \
 } \
-void A_##x##_REG_LSL_IMM(ARM* cpu) \
+void A_##x##_REG_LSL_IMM(ARM* cpu, u32 pc, u32 instr) \
 { \
     A_CALC_OP2_REG_SHIFT_IMM(LSL_IMM##s) \
     A_##x(0) \
 } \
-void A_##x##_REG_LSR_IMM(ARM* cpu) \
+void A_##x##_REG_LSR_IMM(ARM* cpu, u32 pc, u32 instr) \
 { \
     A_CALC_OP2_REG_SHIFT_IMM(LSR_IMM##s) \
     A_##x(0) \
 } \
-void A_##x##_REG_ASR_IMM(ARM* cpu) \
+void A_##x##_REG_ASR_IMM(ARM* cpu, u32 pc, u32 instr) \
 { \
     A_CALC_OP2_REG_SHIFT_IMM(ASR_IMM##s) \
     A_##x(0) \
 } \
-void A_##x##_REG_ROR_IMM(ARM* cpu) \
+void A_##x##_REG_ROR_IMM(ARM* cpu, u32 pc, u32 instr) \
 { \
     A_CALC_OP2_REG_SHIFT_IMM(ROR_IMM##s) \
     A_##x(0) \
 } \
-void A_##x##_REG_LSL_REG(ARM* cpu) \
+void A_##x##_REG_LSL_REG(ARM* cpu, u32 pc, u32 instr) \
 { \
     A_CALC_OP2_REG_SHIFT_REG(LSL_REG##s) \
     A_##x(1) \
 } \
-void A_##x##_REG_LSR_REG(ARM* cpu) \
+void A_##x##_REG_LSR_REG(ARM* cpu, u32 pc, u32 instr) \
 { \
     A_CALC_OP2_REG_SHIFT_REG(LSR_REG##s) \
     A_##x(1) \
 } \
-void A_##x##_REG_ASR_REG(ARM* cpu) \
+void A_##x##_REG_ASR_REG(ARM* cpu, u32 pc, u32 instr) \
 { \
     A_CALC_OP2_REG_SHIFT_REG(ASR_REG##s) \
     A_##x(1) \
 } \
-void A_##x##_REG_ROR_REG(ARM* cpu) \
+void A_##x##_REG_ROR_REG(ARM* cpu, u32 pc, u32 instr) \
 { \
     A_CALC_OP2_REG_SHIFT_REG(ROR_REG##s) \
     A_##x(1) \
@@ -280,7 +280,7 @@ void A_##x##_REG_ROR_REG(ARM* cpu) \
 
 
 #define A_AND(c) \
-    u32 a = cpu->R[(cpu->CurInstr>>16) & 0xF]; \
+    //u32 a = cpu->R[(cpu->CurInstr>>16) & 0xF]; \
     u32 res = a & b; \
     cpu->Cycles += c; \
     if (((cpu->CurInstr>>12) & 0xF) == 15) \
@@ -293,7 +293,7 @@ void A_##x##_REG_ROR_REG(ARM* cpu) \
     }
 
 #define A_AND_S(c) \
-    u32 a = cpu->R[(cpu->CurInstr>>16) & 0xF]; \
+    //u32 a = cpu->R[(cpu->CurInstr>>16) & 0xF]; \
     u32 res = a & b; \
     cpu->SetNZ(res & 0x80000000, \
                !res); \
@@ -311,7 +311,7 @@ A_IMPLEMENT_ALU_OP(AND,_S)
 
 
 #define A_EOR(c) \
-    u32 a = cpu->R[(cpu->CurInstr>>16) & 0xF]; \
+    //u32 a = cpu->R[(cpu->CurInstr>>16) & 0xF]; \
     u32 res = a ^ b; \
     cpu->Cycles += c; \
     if (((cpu->CurInstr>>12) & 0xF) == 15) \
@@ -324,7 +324,7 @@ A_IMPLEMENT_ALU_OP(AND,_S)
     }
 
 #define A_EOR_S(c) \
-    u32 a = cpu->R[(cpu->CurInstr>>16) & 0xF]; \
+    //u32 a = cpu->R[(cpu->CurInstr>>16) & 0xF]; \
     u32 res = a ^ b; \
     cpu->SetNZ(res & 0x80000000, \
                !res); \
@@ -342,7 +342,7 @@ A_IMPLEMENT_ALU_OP(EOR,_S)
 
 
 #define A_SUB(c) \
-    u32 a = cpu->R[(cpu->CurInstr>>16) & 0xF]; \
+    //u32 a = cpu->R[(cpu->CurInstr>>16) & 0xF]; \
     u32 res = a - b; \
     cpu->Cycles += c; \
     if (((cpu->CurInstr>>12) & 0xF) == 15) \
@@ -355,7 +355,7 @@ A_IMPLEMENT_ALU_OP(EOR,_S)
     }
 
 #define A_SUB_S(c) \
-    u32 a = cpu->R[(cpu->CurInstr>>16) & 0xF]; \
+    //u32 a = cpu->R[(cpu->CurInstr>>16) & 0xF]; \
     u32 res = a - b; \
     cpu->SetNZCV(res & 0x80000000, \
                  !res, \
@@ -375,7 +375,7 @@ A_IMPLEMENT_ALU_OP(SUB,)
 
 
 #define A_RSB(c) \
-    u32 a = cpu->R[(cpu->CurInstr>>16) & 0xF]; \
+    //u32 a = cpu->R[(cpu->CurInstr>>16) & 0xF]; \
     u32 res = b - a; \
     cpu->Cycles += c; \
     if (((cpu->CurInstr>>12) & 0xF) == 15) \
@@ -388,7 +388,7 @@ A_IMPLEMENT_ALU_OP(SUB,)
     }
 
 #define A_RSB_S(c) \
-    u32 a = cpu->R[(cpu->CurInstr>>16) & 0xF]; \
+    //u32 a = cpu->R[(cpu->CurInstr>>16) & 0xF]; \
     u32 res = b - a; \
     cpu->SetNZCV(res & 0x80000000, \
                  !res, \
@@ -408,7 +408,7 @@ A_IMPLEMENT_ALU_OP(RSB,)
 
 
 #define A_ADD(c) \
-    u32 a = cpu->R[(cpu->CurInstr>>16) & 0xF]; \
+    //u32 a = cpu->R[(cpu->CurInstr>>16) & 0xF]; \
     u32 res = a + b; \
     cpu->Cycles += c; \
     if (((cpu->CurInstr>>12) & 0xF) == 15) \
@@ -421,7 +421,7 @@ A_IMPLEMENT_ALU_OP(RSB,)
     }
 
 #define A_ADD_S(c) \
-    u32 a = cpu->R[(cpu->CurInstr>>16) & 0xF]; \
+    //u32 a = cpu->R[(cpu->CurInstr>>16) & 0xF]; \
     u32 res = a + b; \
     cpu->SetNZCV(res & 0x80000000, \
                  !res, \
@@ -441,7 +441,7 @@ A_IMPLEMENT_ALU_OP(ADD,)
 
 
 #define A_ADC(c) \
-    u32 a = cpu->R[(cpu->CurInstr>>16) & 0xF]; \
+    //u32 a = cpu->R[(cpu->CurInstr>>16) & 0xF]; \
     u32 res = a + b + (cpu->CPSR&0x20000000 ? 1:0); \
     cpu->Cycles += c; \
     if (((cpu->CurInstr>>12) & 0xF) == 15) \
@@ -454,7 +454,7 @@ A_IMPLEMENT_ALU_OP(ADD,)
     }
 
 #define A_ADC_S(c) \
-    u32 a = cpu->R[(cpu->CurInstr>>16) & 0xF]; \
+    //u32 a = cpu->R[(cpu->CurInstr>>16) & 0xF]; \
     u32 res_tmp = a + b; \
     u32 carry = (cpu->CPSR&0x20000000 ? 1:0); \
     u32 res = res_tmp + carry; \
@@ -476,7 +476,7 @@ A_IMPLEMENT_ALU_OP(ADC,)
 
 
 #define A_SBC(c) \
-    u32 a = cpu->R[(cpu->CurInstr>>16) & 0xF]; \
+    //u32 a = cpu->R[(cpu->CurInstr>>16) & 0xF]; \
     u32 res = a - b - (cpu->CPSR&0x20000000 ? 0:1); \
     cpu->Cycles += c; \
     if (((cpu->CurInstr>>12) & 0xF) == 15) \
@@ -489,7 +489,7 @@ A_IMPLEMENT_ALU_OP(ADC,)
     }
 
 #define A_SBC_S(c) \
-    u32 a = cpu->R[(cpu->CurInstr>>16) & 0xF]; \
+    //u32 a = cpu->R[(cpu->CurInstr>>16) & 0xF]; \
     u32 res_tmp = a - b; \
     u32 carry = (cpu->CPSR&0x20000000 ? 0:1); \
     u32 res = res_tmp - carry; \
@@ -511,7 +511,7 @@ A_IMPLEMENT_ALU_OP(SBC,)
 
 
 #define A_RSC(c) \
-    u32 a = cpu->R[(cpu->CurInstr>>16) & 0xF]; \
+    //u32 a = cpu->R[(cpu->CurInstr>>16) & 0xF]; \
     u32 res = b - a - (cpu->CPSR&0x20000000 ? 0:1); \
     cpu->Cycles += c; \
     if (((cpu->CurInstr>>12) & 0xF) == 15) \
@@ -524,7 +524,7 @@ A_IMPLEMENT_ALU_OP(SBC,)
     }
 
 #define A_RSC_S(c) \
-    u32 a = cpu->R[(cpu->CurInstr>>16) & 0xF]; \
+    //u32 a = cpu->R[(cpu->CurInstr>>16) & 0xF]; \
     u32 res_tmp = b - a; \
     u32 carry = (cpu->CPSR&0x20000000 ? 0:1); \
     u32 res = res_tmp - carry; \
@@ -546,7 +546,7 @@ A_IMPLEMENT_ALU_OP(RSC,)
 
 
 #define A_TST(c) \
-    u32 a = cpu->R[(cpu->CurInstr>>16) & 0xF]; \
+    //u32 a = cpu->R[(cpu->CurInstr>>16) & 0xF]; \
     u32 res = a & b; \
     cpu->SetNZ(res & 0x80000000, \
                !res); \
@@ -556,7 +556,7 @@ A_IMPLEMENT_ALU_TEST(TST,_S)
 
 
 #define A_TEQ(c) \
-    u32 a = cpu->R[(cpu->CurInstr>>16) & 0xF]; \
+    //u32 a = cpu->R[(cpu->CurInstr>>16) & 0xF]; \
     u32 res = a ^ b; \
     cpu->SetNZ(res & 0x80000000, \
                !res); \
@@ -566,7 +566,7 @@ A_IMPLEMENT_ALU_TEST(TEQ,_S)
 
 
 #define A_CMP(c) \
-    u32 a = cpu->R[(cpu->CurInstr>>16) & 0xF]; \
+    //u32 a = cpu->R[(cpu->CurInstr>>16) & 0xF]; \
     u32 res = a - b; \
     cpu->SetNZCV(res & 0x80000000, \
                  !res, \
@@ -578,7 +578,7 @@ A_IMPLEMENT_ALU_TEST(CMP,)
 
 
 #define A_CMN(c) \
-    u32 a = cpu->R[(cpu->CurInstr>>16) & 0xF]; \
+    //u32 a = cpu->R[(cpu->CurInstr>>16) & 0xF]; \
     u32 res = a + b; \
     cpu->SetNZCV(res & 0x80000000, \
                  !res, \
@@ -590,7 +590,7 @@ A_IMPLEMENT_ALU_TEST(CMN,)
 
 
 #define A_ORR(c) \
-    u32 a = cpu->R[(cpu->CurInstr>>16) & 0xF]; \
+    //u32 a = cpu->R[(cpu->CurInstr>>16) & 0xF]; \
     u32 res = a | b; \
     cpu->Cycles += c; \
     if (((cpu->CurInstr>>12) & 0xF) == 15) \
@@ -603,7 +603,7 @@ A_IMPLEMENT_ALU_TEST(CMN,)
     }
 
 #define A_ORR_S(c) \
-    u32 a = cpu->R[(cpu->CurInstr>>16) & 0xF]; \
+    //u32 a = cpu->R[(cpu->CurInstr>>16) & 0xF]; \
     u32 res = a | b; \
     cpu->SetNZ(res & 0x80000000, \
                !res); \
@@ -621,7 +621,7 @@ A_IMPLEMENT_ALU_OP(ORR,_S)
 
 
 #define A_MOV(c) \
-    cpu->Cycles += c; \
+    //cpu->Cycles += c; \
     if (((cpu->CurInstr>>12) & 0xF) == 15) \
     { \
         cpu->JumpTo(b); \
@@ -632,7 +632,7 @@ A_IMPLEMENT_ALU_OP(ORR,_S)
     }
 
 #define A_MOV_S(c) \
-    cpu->SetNZ(b & 0x80000000, \
+    //cpu->SetNZ(b & 0x80000000, \
                !b); \
     cpu->Cycles += c; \
     if (((cpu->CurInstr>>12) & 0xF) == 15) \
@@ -648,7 +648,7 @@ A_IMPLEMENT_ALU_OP(MOV,_S)
 
 
 #define A_BIC(c) \
-    u32 a = cpu->R[(cpu->CurInstr>>16) & 0xF]; \
+    //u32 a = cpu->R[(cpu->CurInstr>>16) & 0xF]; \
     u32 res = a & ~b; \
     cpu->Cycles += c; \
     if (((cpu->CurInstr>>12) & 0xF) == 15) \
@@ -661,7 +661,7 @@ A_IMPLEMENT_ALU_OP(MOV,_S)
     }
 
 #define A_BIC_S(c) \
-    u32 a = cpu->R[(cpu->CurInstr>>16) & 0xF]; \
+    //u32 a = cpu->R[(cpu->CurInstr>>16) & 0xF]; \
     u32 res = a & ~b; \
     cpu->SetNZ(res & 0x80000000, \
                !res); \
@@ -679,7 +679,7 @@ A_IMPLEMENT_ALU_OP(BIC,_S)
 
 
 #define A_MVN(c) \
-    b = ~b; \
+    //b = ~b; \
     cpu->Cycles += c; \
     if (((cpu->CurInstr>>12) & 0xF) == 15) \
     { \
@@ -691,7 +691,7 @@ A_IMPLEMENT_ALU_OP(BIC,_S)
     }
 
 #define A_MVN_S(c) \
-    b = ~b; \
+    //b = ~b; \
     cpu->SetNZ(b & 0x80000000, \
                !b); \
     cpu->Cycles += c; \
@@ -708,61 +708,61 @@ A_IMPLEMENT_ALU_OP(MVN,_S)
 
 
 
-void A_MUL(ARM* cpu)
+void A_MUL(ARM* cpu, u32 pc, u32 instr)
 {
 
 }
 
-void A_MLA(ARM* cpu)
+void A_MLA(ARM* cpu, u32 pc, u32 instr)
 {
 
 }
 
-void A_UMULL(ARM* cpu)
+void A_UMULL(ARM* cpu, u32 pc, u32 instr)
 {
 
 }
 
-void A_UMLAL(ARM* cpu)
+void A_UMLAL(ARM* cpu, u32 pc, u32 instr)
 {
 
 }
 
-void A_SMULL(ARM* cpu)
+void A_SMULL(ARM* cpu, u32 pc, u32 instr)
 {
 
 }
 
-void A_SMLAL(ARM* cpu)
+void A_SMLAL(ARM* cpu, u32 pc, u32 instr)
 {
 
 }
 
-void A_SMLAxy(ARM* cpu)
+void A_SMLAxy(ARM* cpu, u32 pc, u32 instr)
 {
 
 }
 
-void A_SMLAWy(ARM* cpu)
+void A_SMLAWy(ARM* cpu, u32 pc, u32 instr)
 {
 
 }
 
-void A_SMULxy(ARM* cpu)
+void A_SMULxy(ARM* cpu, u32 pc, u32 instr)
 {
     if (cpu->Num != 0) return;
 
 
 }
 
-void A_SMULWy(ARM* cpu)
+void A_SMULWy(ARM* cpu, u32 pc, u32 instr)
 {
     if (cpu->Num != 0) return;
 
 
 }
 
-void A_SMLALxy(ARM* cpu)
+void A_SMLALxy(ARM* cpu, u32 pc, u32 instr)
 {
     if (cpu->Num != 0) return;
 
@@ -771,37 +771,37 @@ void A_SMLALxy(ARM* cpu)
 
 
 
-void A_CLZ(ARM* cpu)
+void A_CLZ(ARM* cpu, u32 pc, u32 instr)
 {
-    if (cpu->Num != 0) return A_UNK(cpu);
+    if (cpu->Num != 0) return A_UNK(cpu, pc, instr);
 
 
 }
 
-void A_QADD(ARM* cpu)
+void A_QADD(ARM* cpu, u32 pc, u32 instr)
 {
-    if (cpu->Num != 0) return A_UNK(cpu);
+    if (cpu->Num != 0) return A_UNK(cpu, pc, instr);
 
 
 }
 
-void A_QSUB(ARM* cpu)
+void A_QSUB(ARM* cpu, u32 pc, u32 instr)
 {
-    if (cpu->Num != 0) return A_UNK(cpu);
+    if (cpu->Num != 0) return A_UNK(cpu, pc, instr);
 
 
 }
 
-void A_QDADD(ARM* cpu)
+void A_QDADD(ARM* cpu, u32 pc, u32 instr)
 {
-    if (cpu->Num != 0) return A_UNK(cpu);
+    if (cpu->Num != 0) return A_UNK(cpu, pc, instr);
 
 
 }
 
-void A_QDSUB(ARM* cpu)
+void A_QDSUB(ARM* cpu, u32 pc, u32 instr)
 {
-    if (cpu->Num != 0) return A_UNK(cpu);
+    if (cpu->Num != 0) return A_UNK(cpu, pc, instr);
 
 
 }
@@ -812,138 +812,138 @@ void A_QDSUB(ARM* cpu)
 
 
 
-void T_LSL_IMM(ARM* cpu)
+void T_LSL_IMM(ARM* cpu, u32 pc, u32 instr)
 {
 
 }
 
-void T_LSR_IMM(ARM* cpu)
+void T_LSR_IMM(ARM* cpu, u32 pc, u32 instr)
 {
 
 }
 
-void T_ASR_IMM(ARM* cpu)
+void T_ASR_IMM(ARM* cpu, u32 pc, u32 instr)
 {
 
 }
 
-void T_ADD_REG_(ARM* cpu)
+void T_ADD_REG_(ARM* cpu, u32 pc, u32 instr)
 {
 
 }
 
-void T_SUB_REG_(ARM* cpu)
+void T_SUB_REG_(ARM* cpu, u32 pc, u32 instr)
 {
 
 }
 
-void T_ADD_IMM_(ARM* cpu)
+void T_ADD_IMM_(ARM* cpu, u32 pc, u32 instr)
 {
 
 }
 
-void T_SUB_IMM_(ARM* cpu)
+void T_SUB_IMM_(ARM* cpu, u32 pc, u32 instr)
 {
 
 }
 
-void T_MOV_IMM(ARM* cpu)
+void T_MOV_IMM(ARM* cpu, u32 pc, u32 instr)
 {
 
 }
 
-void T_CMP_IMM(ARM* cpu)
+void T_CMP_IMM(ARM* cpu, u32 pc, u32 instr)
 {
 
 }
 
-void T_ADD_IMM(ARM* cpu)
+void T_ADD_IMM(ARM* cpu, u32 pc, u32 instr)
 {
 
 }
 
-void T_SUB_IMM(ARM* cpu)
+void T_SUB_IMM(ARM* cpu, u32 pc, u32 instr)
 {
 
 }
 
 
-void T_AND_REG(ARM* cpu)
+void T_AND_REG(ARM* cpu, u32 pc, u32 instr)
 {
 
 }
 
-void T_EOR_REG(ARM* cpu)
+void T_EOR_REG(ARM* cpu, u32 pc, u32 instr)
 {
 
 }
 
-void T_LSL_REG(ARM* cpu)
+void T_LSL_REG(ARM* cpu, u32 pc, u32 instr)
 {
 
 }
 
-void T_LSR_REG(ARM* cpu)
+void T_LSR_REG(ARM* cpu, u32 pc, u32 instr)
 {
 
 }
 
-void T_ASR_REG(ARM* cpu)
+void T_ASR_REG(ARM* cpu, u32 pc, u32 instr)
 {
 
 }
 
-void T_ADC_REG(ARM* cpu)
+void T_ADC_REG(ARM* cpu, u32 pc, u32 instr)
 {
 
 }
 
-void T_SBC_REG(ARM* cpu)
+void T_SBC_REG(ARM* cpu, u32 pc, u32 instr)
 {
 
 }
 
-void T_ROR_REG(ARM* cpu)
+void T_ROR_REG(ARM* cpu, u32 pc, u32 instr)
 {
 
 }
 
-void T_TST_REG(ARM* cpu)
+void T_TST_REG(ARM* cpu, u32 pc, u32 instr)
 {
 
 }
 
-void T_NEG_REG(ARM* cpu)
+void T_NEG_REG(ARM* cpu, u32 pc, u32 instr)
 {
 
 }
 
-void T_CMP_REG(ARM* cpu)
+void T_CMP_REG(ARM* cpu, u32 pc, u32 instr)
 {
 
 }
 
-void T_CMN_REG(ARM* cpu)
+void T_CMN_REG(ARM* cpu, u32 pc, u32 instr)
 {
 
 }
 
-void T_ORR_REG(ARM* cpu)
+void T_ORR_REG(ARM* cpu, u32 pc, u32 instr)
 {
 
 }
 
-void T_MUL_REG(ARM* cpu)
+void T_MUL_REG(ARM* cpu, u32 pc, u32 instr)
 {
 
 }
 
-void T_BIC_REG(ARM* cpu)
+void T_BIC_REG(ARM* cpu, u32 pc, u32 instr)
 {
 
 }
 
-void T_MVN_REG(ARM* cpu)
+void T_MVN_REG(ARM* cpu, u32 pc, u32 instr)
 {
 
 }
@@ -952,33 +952,33 @@ void T_MVN_REG(ARM* cpu)
 // TODO: check those when MSBs and MSBd are cleared
 // GBAtek says it's not allowed, but it works atleast on the ARM9
 
-void T_ADD_HIREG(ARM* cpu)
+void T_ADD_HIREG(ARM* cpu, u32 pc, u32 instr)
 {
 
 }
 
-void T_CMP_HIREG(ARM* cpu)
+void T_CMP_HIREG(ARM* cpu, u32 pc, u32 instr)
 {
 
 }
 
-void T_MOV_HIREG(ARM* cpu)
+void T_MOV_HIREG(ARM* cpu, u32 pc, u32 instr)
 {
 
 }
 
 
-void T_ADD_PCREL(ARM* cpu)
+void T_ADD_PCREL(ARM* cpu, u32 pc, u32 instr)
 {
 
 }
 
-void T_ADD_SPREL(ARM* cpu)
+void T_ADD_SPREL(ARM* cpu, u32 pc, u32 instr)
 {
 
 }
 
-void T_ADD_SP(ARM* cpu)
+void T_ADD_SP(ARM* cpu, u32 pc, u32 instr)
 {
 
 }

@@ -16,75 +16,129 @@
     with melonDS. If not, see http://www.gnu.org/licenses/.
 */
 
+#ifdef __WIN32__
+    #include <windows.h>
+#else
+    // TODO!!
+#endif
+
 #include <stdio.h>
 #include "NDS.h"
 #include "CP15.h"
-#include "ARMInterpreter.h"
-#include "ARMInterpreter_ALU.h"
-#include "ARMInterpreter_Branch.h"
-#include "ARMInterpreter_LoadStore.h"
+#include "ARMJIT.h"
+#include "ARMJIT_ALU.h"
+#include "ARMJIT_Branch.h"
+#include "ARMJIT_LoadStore.h"
 
 
 namespace ARMJIT
 {
 
 
-void A_UNK(ARM* cpu)
+const int kBlockSize = 32*1024;
+const int kNumBlocks = 256;
+const int kMaxBlocksPerPage = 4;
+
+u8* CodeCache;
+u8** CodeCacheIndex;
+u32* CodeCacheReverseIndex;
+
+
+bool Init()
 {
-    printf("undefined ARM%d instruction %08X @ %08X\n", cpu->Num?7:9, cpu->CurInstr, cpu->R[15]-8);
+#ifdef __WIN32__
+    CodeCache = (u8*)VirtualAlloc(NULL, kNumBlocks*kBlockSize, MEM_COMMIT|MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+#else
+    // TODO!!
+    CodeCache = NULL;
+#endif
+
+    if (!CodeCache)
+    {
+        printf("JIT: code cache allocation failed\n");
+        return false;
+    }
+
+    // 0x0_XXXX00
+    CodeCacheIndex = new u8*[65536*kMaxBlocksPerPage];
+    CodeCacheReverseIndex = new u32[kNumBlocks];
+
+    return true;
+}
+
+void DeInit()
+{
+    if (CodeCache)
+    {
+#ifdef __WIN32__
+       VirtualFree(CodeCache, 0, MEM_RELEASE);
+#else
+        // TODO!!
+        CodeCache = NULL;
+#endif
+    }
+
+    delete[] CodeCacheIndex;
+    delete[] CodeCacheReverseIndex;
+}
+
+
+void A_UNK(ARM* cpu, u32 pc, u32 instr)
+{
+    printf("undefined ARM%d instruction %08X @ %08X\n", cpu->Num?7:9, instr, pc-8);
     //for (int i = 0; i < 16; i++) printf("R%d: %08X\n", i, cpu->R[i]);
 
 }
 
-void T_UNK(ARM* cpu)
+void T_UNK(ARM* cpu, u32 pc, u32 instr)
 {
-    printf("undefined THUMB%d instruction %04X @ %08X\n", cpu->Num?7:9, cpu->CurInstr, cpu->R[15]-4);
+    printf("undefined THUMB%d instruction %04X @ %08X\n", cpu->Num?7:9, instr, pc-4);
 
 }
 
 
 
-void A_MSR_IMM(ARM* cpu)
+void A_MSR_IMM(ARM* cpu, u32 pc, u32 instr)
 {
 
 }
 
-void A_MSR_REG(ARM* cpu)
+void A_MSR_REG(ARM* cpu, u32 pc, u32 instr)
 {
 
 }
 
-void A_MRS(ARM* cpu)
-{
-
-}
-
-
-void A_MCR(ARM* cpu)
-{
-
-}
-
-void A_MRC(ARM* cpu)
+void A_MRS(ARM* cpu, u32 pc, u32 instr)
 {
 
 }
 
 
-
-void A_SVC(ARM* cpu)
+void A_MCR(ARM* cpu, u32 pc, u32 instr)
 {
 
 }
 
-void T_SVC(ARM* cpu)
+void A_MRC(ARM* cpu, u32 pc, u32 instr)
 {
 
 }
 
 
 
-#define INSTRFUNC_PROTO(x)  void (*x)(ARM* cpu)
+void A_SVC(ARM* cpu, u32 pc, u32 instr)
+{
+
+}
+
+void T_SVC(ARM* cpu, u32 pc, u32 instr)
+{
+
+}
+
+
+
+#define INSTRFUNC_PROTO(x)  void (*x)(ARM* cpu, u32 pc, u32 instr)
 #include "ARM_InstrTable.h"
 #undef INSTRFUNC_PROTO
 

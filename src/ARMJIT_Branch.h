@@ -22,17 +22,17 @@
 namespace ARMJIT
 {
 
-void A_B(ARM* cpu);
-void A_BL(ARM* cpu);
-void A_BX(ARM* cpu);
-void A_BLX_REG(ARM* cpu);
+void A_B(ARM* cpu, u32 pc, u32 instr);
+void A_BL(ARM* cpu, u32 pc, u32 instr);
+void A_BX(ARM* cpu, u32 pc, u32 instr);
+void A_BLX_REG(ARM* cpu, u32 pc, u32 instr);
 
-void T_BCOND(ARM* cpu);
-void T_BX(ARM* cpu);
-void T_BLX_REG(ARM* cpu);
-void T_B(ARM* cpu);
-void T_BL_LONG_1(ARM* cpu);
-void T_BL_LONG_2(ARM* cpu);
+void T_BCOND(ARM* cpu, u32 pc, u32 instr);
+void T_BX(ARM* cpu, u32 pc, u32 instr);
+void T_BLX_REG(ARM* cpu, u32 pc, u32 instr);
+void T_B(ARM* cpu, u32 pc, u32 instr);
+void T_BL_LONG_1(ARM* cpu, u32 pc, u32 instr);
+void T_BL_LONG_2(ARM* cpu, u32 pc, u32 instr);
 
 }
 

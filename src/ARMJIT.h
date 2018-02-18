@@ -25,10 +25,10 @@
 namespace ARMJIT
 {
 
-extern void (*ARMInstrTable[4096])(ARM* cpu);
-extern void (*THUMBInstrTable[1024])(ARM* cpu);
+extern void (*ARMInstrTable[4096])(ARM* cpu, u32 pc, u32 instr);
+extern void (*THUMBInstrTable[1024])(ARM* cpu, u32 pc, u32 instr);
 
-void A_BLX_IMM(ARM* cpu); // I'm a special one look at me
+void A_BLX_IMM(ARM* cpu, u32 pc, u32 instr); // I'm a special one look at me
 
 }
 
