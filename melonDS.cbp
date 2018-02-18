@@ -111,6 +111,16 @@
 		<Unit filename="src/ARMInterpreter_Branch.h" />
 		<Unit filename="src/ARMInterpreter_LoadStore.cpp" />
 		<Unit filename="src/ARMInterpreter_LoadStore.h" />
+		<Unit filename="src/ARMJIT.cpp" />
+		<Unit filename="src/ARMJIT.h" />
+		<Unit filename="src/ARMJIT_ALU.cpp" />
+		<Unit filename="src/ARMJIT_ALU.h" />
+		<Unit filename="src/ARMJIT_Branch.cpp" />
+		<Unit filename="src/ARMJIT_Branch.h" />
+		<Unit filename="src/ARMJIT_Emitter.h" />
+		<Unit filename="src/ARMJIT_Emitter_x64.cpp" />
+		<Unit filename="src/ARMJIT_LoadStore.cpp" />
+		<Unit filename="src/ARMJIT_LoadStore.h" />
 		<Unit filename="src/ARM_InstrTable.h" />
 		<Unit filename="src/CP15.cpp" />
 		<Unit filename="src/CP15.h" />
