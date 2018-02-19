@@ -40,8 +40,8 @@ const int kNumBlocks = 256;
 const int kMaxBlocksPerPage = 4;
 
 u8* CodeCache;
-u8** CodeCacheIndex;
-u32* CodeCacheReverseIndex;
+u8** CodeCacheIndex;            // memory addr tag -> pointer to code block in cache
+u32* CodeCacheReverseIndex;     // block number -> memory address
 
 
 bool Init()
@@ -80,6 +80,15 @@ void DeInit()
 
     delete[] CodeCacheIndex;
     delete[] CodeCacheReverseIndex;
+}
+
+void Reset()
+{
+    if (CodeCache)
+        memset(CodeCache, 0xCC, kNumBlocks*kBlockSize);
+
+    memset(CodeCacheIndex, 0, 65536*kMaxBlocksPerPage*sizeof(u8*));
+    memset(CodeCacheReverseIndex, 0, kNumBlocks*sizeof(u32));
 }
 
 

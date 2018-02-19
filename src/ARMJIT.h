@@ -25,6 +25,10 @@
 namespace ARMJIT
 {
 
+bool Init();
+void DeInit();
+void Reset();
+
 extern void (*ARMInstrTable[4096])(ARM* cpu, u32 pc, u32 instr);
 extern void (*THUMBInstrTable[1024])(ARM* cpu, u32 pc, u32 instr);
 

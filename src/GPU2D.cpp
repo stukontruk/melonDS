@@ -480,6 +480,16 @@ void GPU2D::DrawScanline(u32 line)
         return;
     }
 
+    // forced blank
+    // (checkme: are there still things that can run under this mode? likely not)
+    if (DispCnt & (1<<7))
+    {
+        for (int i = 0; i < 256; i++)
+            dst[i] = 0xFFFFFFFF;
+
+        return;
+    }
+
     u32 dispmode = DispCnt >> 16;
     dispmode &= (Num ? 0x1 : 0x3);
 
@@ -614,12 +624,12 @@ void GPU2D::DrawScanline(u32 line)
     for (int i = 0; i < 256; i++)
     {
         u32 c = dst[i];
-        
+
         u32 r = c << 18;
         u32 g = (c << 2) & 0xFC00;
         u32 b = (c >> 14) & 0xFC;
         c = r | g | b;
-        
+
         dst[i] = c | ((c & 0x00C0C0C0) >> 6) | 0xFF000000;
     }
 }
