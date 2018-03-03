@@ -20,6 +20,7 @@
 #include <string.h>
 #include "NDS.h"
 #include "ARM.h"
+#include "ARMJIT.h"
 #include "CP15.h"
 #include "NDSCart.h"
 #include "DMA.h"
@@ -120,6 +121,8 @@ bool Init()
     ARM9 = new ARM(0);
     ARM7 = new ARM(1);
 
+    if (!ARMJIT::Init()) return false;
+
     DMAs[0] = new DMA(0, 0);
     DMAs[1] = new DMA(0, 1);
     DMAs[2] = new DMA(0, 2);
@@ -209,6 +212,8 @@ void DeInit()
 {
     delete ARM9;
     delete ARM7;
+
+    ARMJIT::DeInit();
 
     for (int i = 0; i < 8; i++)
         delete DMAs[i];
@@ -384,6 +389,8 @@ void Reset()
     ARM7->Reset();
     CP15::Reset();
 
+    ARMJIT::Reset();
+
     CPUStop = 0;
 
     memset(Timers, 0, 8*sizeof(Timer));
@@ -455,6 +462,21 @@ void CalcIterationCycles()
     }
 }
 
+// blorp
+void CalcIterationCycles2()
+{
+    CurIterationCycles = 64;
+
+    for (int i = 0; i < Event_MAX; i++)
+    {
+        if (!(SchedListMask & (1<<i)))
+            continue;
+
+        if (SchedList[i].WaitCycles < CurIterationCycles)
+            CurIterationCycles = SchedList[i].WaitCycles;
+    }
+}
+
 void RunSystem(s32 cycles)
 {
     for (int i = 0; i < Event_MAX; i++)
@@ -481,7 +503,6 @@ u32 RunFrame()
     while (Running && GPU::TotalScanlines==0)
     {
         s32 ndscyclestorun;
-        s32 ndscycles = 0;
 
         // TODO: give it some margin, so it can directly do 17 cycles instead of 16 then 1
         CalcIterationCycles();
@@ -515,6 +536,58 @@ u32 RunFrame()
         {
             ARM7->CyclesToRun = ndscyclestorun - ARM7Offset;
             ARM7->Execute();
+            ARM7Offset = ARM7->Cycles - ARM7->CyclesToRun;
+        }
+
+        RunSystem(ndscyclestorun);
+        //GPU3D::Run(ndscyclestorun);
+    }
+
+    return GPU::TotalScanlines;
+}
+
+u32 RunFrame_JIT()
+{
+    if (!Running) return 263; // dorp
+
+    GPU::StartFrame();
+
+    while (Running && GPU::TotalScanlines==0)
+    {
+        s32 ndscyclestorun;
+
+        // TODO: give it some margin, so it can directly do 17 cycles instead of 16 then 1
+        CalcIterationCycles2();
+
+        if (CPUStop & 0xFFFF)
+        {
+            s32 cycles = CurIterationCycles;
+            cycles = DMAs[0]->Run(cycles);
+            if (cycles > 0) cycles = DMAs[1]->Run(cycles);
+            if (cycles > 0) cycles = DMAs[2]->Run(cycles);
+            if (cycles > 0) cycles = DMAs[3]->Run(cycles);
+            ndscyclestorun = CurIterationCycles - cycles;
+        }
+        else
+        {
+            ARM9->CyclesToRun = CurIterationCycles << 1;
+            ARM9->Execute_JIT();
+            ndscyclestorun = ARM9->Cycles >> 1;
+        }
+
+        if (CPUStop & 0xFFFF0000)
+        {
+            s32 cycles = ndscyclestorun - ARM7Offset;
+            cycles = DMAs[4]->Run(cycles);
+            if (cycles > 0) cycles = DMAs[5]->Run(cycles);
+            if (cycles > 0) cycles = DMAs[6]->Run(cycles);
+            if (cycles > 0) cycles = DMAs[7]->Run(cycles);
+            ARM7Offset = -cycles;
+        }
+        else
+        {
+            ARM7->CyclesToRun = ndscyclestorun - ARM7Offset;
+            ARM7->Execute_JIT();
             ARM7Offset = ARM7->Cycles - ARM7->CyclesToRun;
         }
 

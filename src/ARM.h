@@ -57,6 +57,7 @@ public:
     }
 
     s32 Execute();
+    s32 Execute_JIT();
 
     bool CheckCondition(u32 code)
     {

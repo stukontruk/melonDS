@@ -321,3 +321,39 @@ s32 ARM::Execute()
 
     return Cycles;
 }
+
+s32 ARM::Execute_JIT()
+{
+    if (Halted)
+    {
+        if (Halted == 2)
+        {
+            Halted = 0;
+        }
+        else if (NDS::HaltInterrupted(Num))
+        {
+            Halted = 0;
+            if (NDS::IME[Num] & 0x1)
+                TriggerIRQ();
+        }
+        else
+        {
+            Cycles = CyclesToRun;
+
+            if (Num == 0) NDS::RunTimingCriticalDevices(0, CyclesToRun >> 1);
+            else          NDS::RunTimingCriticalDevices(1, CyclesToRun);
+
+            return Cycles;
+        }
+    }
+
+    Cycles = 0;
+    s32 lastcycles = 0;
+
+    // TODO: run shit here
+
+    if (Halted == 2)
+        Halted = 0;
+
+    return Cycles;
+}

@@ -223,7 +223,8 @@ int EmuThreadFunc(void* burp)
             NDS::SetKeyMask(keymask & joymask);
 
             // emulate
-            u32 nlines = NDS::RunFrame();
+            //u32 nlines = NDS::RunFrame();
+            u32 nlines = NDS::RunFrame_JIT();
 
             if (EmuRunning == 0) break;
 

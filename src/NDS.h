@@ -116,6 +116,7 @@ void LoadBIOS();
 void SetupDirectBoot();
 
 u32 RunFrame();
+u32 RunFrame_JIT();
 
 void PressKey(u32 key);
 void ReleaseKey(u32 key);

@@ -19,6 +19,21 @@
 /*
   register mapping
 
+  eax
+  ecx
+  edx
+  ebx
+  esp
+  ebp
+  esi
+  edi
+
+  r8d
+  r9d
+  ...
+  r14d
+  r15d
+
   r0 -> ebx
   r1 -> ebp
   r2 -> edi
