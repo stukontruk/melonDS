@@ -39,47 +39,55 @@ const int kBlockSize = 32*1024;
 const int kNumBlocks = 256;
 const int kMaxBlocksPerPage = 4;
 
-u8* CodeCache;
-u8** CodeCacheIndex;            // memory addr tag -> pointer to code block in cache
-u32* CodeCacheReverseIndex;     // block number -> memory address
+u8* CodeCache[2];
+u8** CodeCacheIndex[2];            // memory addr tag -> pointer to code block in cache
+u32* CodeCacheReverseIndex[2];     // block number -> memory address
 
 
 bool Init()
 {
 #ifdef __WIN32__
-    CodeCache = (u8*)VirtualAlloc(NULL, kNumBlocks*kBlockSize, MEM_COMMIT|MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+    CodeCache[0] = (u8*)VirtualAlloc(NULL, kNumBlocks*kBlockSize, MEM_COMMIT|MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+    CodeCache[1] = (u8*)VirtualAlloc(NULL, kNumBlocks*kBlockSize, MEM_COMMIT|MEM_RESERVE, PAGE_EXECUTE_READWRITE);
 #else
     // TODO!!
-    CodeCache = NULL;
+    CodeCache[0] = NULL;
+    CodeCache[1] = NULL;
 #endif
 
-    if (!CodeCache)
+    if (!CodeCache[0] || !CodeCache[1])
     {
         printf("JIT: code cache allocation failed\n");
         return false;
     }
 
     // 0x0_XXXX00
-    CodeCacheIndex = new u8*[65536*kMaxBlocksPerPage];
-    CodeCacheReverseIndex = new u32[kNumBlocks];
+    CodeCacheIndex[0] = new u8*[65536*kMaxBlocksPerPage];
+    CodeCacheIndex[1] = new u8*[65536*kMaxBlocksPerPage];
+    CodeCacheReverseIndex[0] = new u32[kNumBlocks];
+    CodeCacheReverseIndex[1] = new u32[kNumBlocks];
 
     return true;
 }
 
 void DeInit()
 {
-    if (CodeCache)
+    if (CodeCache[0] && CodeCache[1])
     {
 #ifdef __WIN32__
-       VirtualFree(CodeCache, 0, MEM_RELEASE);
+       VirtualFree(CodeCache[0], 0, MEM_RELEASE);
+       VirtualFree(CodeCache[1], 0, MEM_RELEASE);
 #else
         // TODO!!
-        CodeCache = NULL;
+        CodeCache[0] = NULL;
+        CodeCache[1] = NULL;
 #endif
     }
 
-    delete[] CodeCacheIndex;
-    delete[] CodeCacheReverseIndex;
+    delete[] CodeCacheIndex[0];
+    delete[] CodeCacheIndex[1];
+    delete[] CodeCacheReverseIndex[0];
+    delete[] CodeCacheReverseIndex[1];
 }
 
 void Reset()
