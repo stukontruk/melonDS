@@ -92,11 +92,16 @@ void DeInit()
 
 void Reset()
 {
-    if (CodeCache)
-        memset(CodeCache, 0xCC, kNumBlocks*kBlockSize);
+    if (CodeCache[0] && CodeCache[1])
+    {
+        memset(CodeCache[0], 0xCC, kNumBlocks*kBlockSize);
+        memset(CodeCache[1], 0xCC, kNumBlocks*kBlockSize);
+    }
 
-    memset(CodeCacheIndex, 0, 65536*kMaxBlocksPerPage*sizeof(u8*));
-    memset(CodeCacheReverseIndex, 0, kNumBlocks*sizeof(u32));
+    memset(CodeCacheIndex[0], 0, 65536*kMaxBlocksPerPage*sizeof(u8*));
+    memset(CodeCacheIndex[1], 0, 65536*kMaxBlocksPerPage*sizeof(u8*));
+    memset(CodeCacheReverseIndex[0], 0, kNumBlocks*sizeof(u32));
+    memset(CodeCacheReverseIndex[1], 0, kNumBlocks*sizeof(u32));
 }
 
 
