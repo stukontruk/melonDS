@@ -25,9 +25,13 @@
 namespace ARMJIT
 {
 
+typedef void (*CodeBlock)();
+
 bool Init();
 void DeInit();
 void Reset();
+
+CodeBlock LookupCode(ARM* cpu);
 
 extern void (*ARMInstrTable[4096])(ARM* cpu, u32 pc, u32 instr);
 extern void (*THUMBInstrTable[1024])(ARM* cpu, u32 pc, u32 instr);

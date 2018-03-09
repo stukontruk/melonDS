@@ -40,8 +40,9 @@ const int kNumBlocks = 256;
 const int kMaxBlocksPerPage = 4;
 
 u8* CodeCache[2];
-u8** CodeCacheIndex[2];            // memory addr tag -> pointer to code block in cache
+u32* CodeCacheIndex[2];            // memory addr tag -> code block number
 u32* CodeCacheReverseIndex[2];     // block number -> memory address
+u32 NextCodeBlockID[2];
 
 
 bool Init()
@@ -62,8 +63,8 @@ bool Init()
     }
 
     // 0x0_XXXX00
-    CodeCacheIndex[0] = new u8*[65536*kMaxBlocksPerPage];
-    CodeCacheIndex[1] = new u8*[65536*kMaxBlocksPerPage];
+    CodeCacheIndex[0] = new u32[65536*kMaxBlocksPerPage];
+    CodeCacheIndex[1] = new u32[65536*kMaxBlocksPerPage];
     CodeCacheReverseIndex[0] = new u32[kNumBlocks];
     CodeCacheReverseIndex[1] = new u32[kNumBlocks];
 
@@ -98,10 +99,109 @@ void Reset()
         memset(CodeCache[1], 0xCC, kNumBlocks*kBlockSize);
     }
 
-    memset(CodeCacheIndex[0], 0, 65536*kMaxBlocksPerPage*sizeof(u8*));
-    memset(CodeCacheIndex[1], 0, 65536*kMaxBlocksPerPage*sizeof(u8*));
-    memset(CodeCacheReverseIndex[0], 0, kNumBlocks*sizeof(u32));
-    memset(CodeCacheReverseIndex[1], 0, kNumBlocks*sizeof(u32));
+    memset(CodeCacheIndex[0], 0xFF, 65536*kMaxBlocksPerPage*sizeof(u32));
+    memset(CodeCacheIndex[1], 0xFF, 65536*kMaxBlocksPerPage*sizeof(u32));
+    memset(CodeCacheReverseIndex[0], 0xFF, kNumBlocks*sizeof(u32));
+    memset(CodeCacheReverseIndex[1], 0xFF, kNumBlocks*sizeof(u32));
+
+    NextCodeBlockID[0] = 0;
+    NextCodeBlockID[1] = 0;
+}
+
+
+void InvalidateCache(u32 cpu, u32 addr)
+{
+    u32* candidates = &CodeCacheIndex[cpu][(addr >> 8) & 0xFFFF];
+    for (int i = 0; i < kMaxBlocksPerPage; i++)
+    {
+        u32 id = candidates[i];
+
+        if (id == 0xFFFFFFFF)
+            continue;
+
+        if (CodeCacheReverseIndex[cpu][id] == addr)
+        {
+            candidates[i] = 0xFFFFFFFF;
+            CodeCacheReverseIndex[cpu][id] = 0xFFFFFFFF;
+        }
+    }
+}
+
+u32 CompileCode(ARM* cpu, u32 addr)
+{
+    u32 id = NextCodeBlockID[cpu->Num];
+    u32 addr_tag = (addr >> 8) & 0xFFFF;
+
+    u32 oldaddr = CodeCacheReverseIndex[cpu->Num][id];
+    if (oldaddr != 0xFFFFFFFF)
+    {
+        // evict it
+        InvalidateCache(cpu->Num, addr);
+    }
+
+    // compile new code
+    // .. sorry
+    // TODO actual code!!
+    u8* code = &CodeCache[cpu->Num][id * kBlockSize];
+    *code = 0xC3; // RET
+
+    u32* candidates = &CodeCacheIndex[cpu->Num][(addr >> 8) & 0xFFFF];
+    bool good = false;
+    for (int i = 0; i < kMaxBlocksPerPage; i++)
+    {
+        if (candidates[i] == 0xFFFFFFFF)
+        {
+            candidates[i] = id;
+            good = true;
+            break;
+        }
+    }
+
+    if (!good)
+    {
+        printf("!!!! CACHE INDEX FULL FOR TAG %04X (ADDR %08X)\n", (addr>>8)&0xFFFF, addr);
+        return -1;
+    }
+
+    CodeCacheReverseIndex[cpu->Num][id] = addr;
+
+    NextCodeBlockID[cpu->Num]++;
+    if (NextCodeBlockID[cpu->Num] >= kNumBlocks)
+        NextCodeBlockID[cpu->Num] = 0;
+
+    return id;
+}
+
+CodeBlock LookupCode(ARM* cpu)
+{
+    u32 addr = cpu->R[15] - ((cpu->CPSR & 0x20) ? 2 : 4);
+
+    u32* candidates = &CodeCacheIndex[cpu->Num][(addr >> 8) & 0xFFFF];
+    u32 blockid = -1;
+    for (int i = 0; i < kMaxBlocksPerPage; i++)
+    {
+        u32 id = candidates[i];
+
+        if (id == 0xFFFFFFFF)
+            continue;
+
+        if (CodeCacheReverseIndex[cpu->Num][id] == addr)
+        {
+            blockid = id;
+            break;
+        }
+    }
+
+    if (blockid == -1)
+    {
+        // compile it!
+        printf("block for ARM%c %08X not found, compiling it\n", cpu->Num?'7':'9', addr);
+
+        blockid = CompileCode(cpu, addr);
+    }
+
+    u8* code = &CodeCache[cpu->Num][blockid * kBlockSize];
+    return (CodeBlock)code;
 }
 
 

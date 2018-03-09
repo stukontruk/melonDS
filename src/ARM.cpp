@@ -20,6 +20,7 @@
 #include "NDS.h"
 #include "ARM.h"
 #include "ARMInterpreter.h"
+#include "ARMJIT.h"
 
 
 u32 ARM::ConditionTable[16] =
@@ -351,6 +352,9 @@ s32 ARM::Execute_JIT()
     s32 lastcycles = 0;
 
     // TODO: run shit here
+    // well uh...
+    ARMJIT::CodeBlock code = ARMJIT::LookupCode(this);
+    code();
 
     if (Halted == 2)
         Halted = 0;
