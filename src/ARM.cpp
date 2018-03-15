@@ -356,6 +356,8 @@ s32 ARM::Execute_JIT()
     ARMJIT::CodeBlock code = ARMJIT::LookupCode(this);
     code();
 
+    printf("cycles post-code: %08X\n", Cycles);
+
     if (Halted == 2)
         Halted = 0;
 

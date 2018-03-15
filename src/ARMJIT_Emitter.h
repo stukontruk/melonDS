@@ -19,6 +19,16 @@
 #ifndef ARMJIT_EMITTER_H
 #define ARMJIT_EMITTER_H
 
-//
+namespace ARMJIT
+{
+
+namespace Emitter
+{
+
+// things
+
+}
+
+}
 
 #endif // ARMJIT_EMITTER_H

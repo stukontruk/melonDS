@@ -72,3 +72,81 @@
   use return value in eax
   restore eax if needed
 */
+
+#include "ARMJIT.h"
+#include "ARMJIT_Emitter.h"
+
+
+namespace ARMJIT
+{
+
+namespace Emitter
+{
+
+enum X64Regs
+{
+    EAX = 0,
+    ECX,
+    EDX,
+    EBX,
+    ESP,
+    EBP,
+    ESI,
+    EDI,
+
+    R8D = 0x80,
+    R9D,
+    R10D,
+    R11D,
+    R12D,
+    R13D,
+    R14D,
+    R15D
+};
+
+u8 RegMapping[16] =
+{
+    EBX, EBP, ESI, EDI, R12D, R13D, R14D, R15D,
+    ECX, EDX, R8D, R9D, R10D, R11D, 0xFF, 0xFF
+};
+
+u8* CodeBuffer;
+u8* C;
+
+
+void SetCodeBuffer(u8* buf)
+{
+    CodeBuffer = buf;
+    C = buf;
+}
+
+
+// technically PUSH/POP act on whole 64bit registers
+
+void PUSH(u8 reg)
+{
+    if (reg & 0x80) *C++ = 0x41;
+    *C++ = 0x50 + (reg & 0x07);
+}
+
+void POP(u8 reg)
+{
+    if (reg & 0x80) *C++ = 0x41;
+    *C++ = 0x58 + (reg & 0x07);
+}
+
+void MOV_Imm32_Mem(u32 imm, void* ptr)
+{
+    *C++ = 0xC7;
+    *C++ = 0x04;
+    *C++ = 0x25;
+    *(u32*)C = (u32)(((u64)ptr) & 0xFFFFFFFF);
+    C += 4;
+    *(u32*)C = imm;
+    C += 4;
+}
+
+
+}
+
+}
