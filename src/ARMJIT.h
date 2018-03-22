@@ -25,6 +25,8 @@
 namespace ARMJIT
 {
 
+extern const int kBlockSize;
+
 typedef void (*CodeBlock)();
 
 bool Init();

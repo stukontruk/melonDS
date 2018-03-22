@@ -26,6 +26,7 @@
 #include "NDS.h"
 #include "CP15.h"
 #include "ARMJIT.h"
+#include "ARMJIT_Emitter.h"
 #include "ARMJIT_ALU.h"
 #include "ARMJIT_Branch.h"
 #include "ARMJIT_LoadStore.h"
@@ -144,14 +145,15 @@ u32 CompileCode(ARM* cpu, u32 addr)
     // TODO actual code!!
     u8* code = &CodeCache[cpu->Num][id * kBlockSize];
     // c7 04 25 78 56 00 00 44 44 34 12    mov    DWORD PTR ds:0x5678,0x12344444
-    *code++ = 0xC7;
+    /**code++ = 0xC7;
     *code++ = 0x04;
     *code++ = 0x25;
     *(u32*)code = (u32)(((u64)&cpu->Cycles) & 0xFFFFFFFF);
     code += 4;
     *(u32*)code = cpu->Num?0x77777777:0x99999999;
     code += 4;
-    *code = 0xC3; // RET
+    *code = 0xC3; // RET*/
+    Emitter::CompileCode(cpu, addr, code);
 
     u32* candidates = &CodeCacheIndex[cpu->Num][(addr >> 8) & 0xFFFF];
     bool good = false;

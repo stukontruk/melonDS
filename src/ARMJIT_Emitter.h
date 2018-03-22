@@ -25,7 +25,7 @@ namespace ARMJIT
 namespace Emitter
 {
 
-// things
+void CompileCode(ARM* cpu, u32 addr, u8* buf);
 
 }
 

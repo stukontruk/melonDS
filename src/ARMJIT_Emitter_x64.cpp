@@ -64,6 +64,7 @@
 
   when calling an external function:
   save x86 registers: ecx, edx, r8d, r9d, r10d, r11d (plus: edi, esi under Linux) (plus: eax if needed)
+  Windows: shadow stack space TODO
   set up function arguments:
     Windows: ecx, edx, r8d, r9d
     Linux: edi, esi, edx, ecx, r8d, r9d
@@ -121,18 +122,23 @@ void SetCodeBuffer(u8* buf)
 }
 
 
+void RET()
+{
+    *C++ = 0xC3;
+}
+
 // technically PUSH/POP act on whole 64bit registers
 
 void PUSH(u8 reg)
 {
     if (reg & 0x80) *C++ = 0x41;
-    *C++ = 0x50 + (reg & 0x07);
+    *C++ = 0x50 | (reg & 0x07);
 }
 
 void POP(u8 reg)
 {
     if (reg & 0x80) *C++ = 0x41;
-    *C++ = 0x58 + (reg & 0x07);
+    *C++ = 0x58 | (reg & 0x07);
 }
 
 void MOV_Imm32_Mem(u32 imm, void* ptr)
@@ -144,6 +150,101 @@ void MOV_Imm32_Mem(u32 imm, void* ptr)
     C += 4;
     *(u32*)C = imm;
     C += 4;
+}
+
+void MOV_Reg32_Mem(u8 reg, void* ptr)
+{
+    if (reg & 0x80) *C++ = 0x44;
+    *C++ = 0x8B;
+    *C++ = 0x04 | ((reg & 0x07) << 3);
+    *(u32*)C = (u32)(((u64)ptr) & 0xFFFFFFFF);
+    C += 4;
+}
+
+void MOV_Mem_Reg32(void* ptr, u8 reg)
+{
+    if (reg & 0x80) *C++ = 0x44;
+    *C++ = 0x89;
+    *C++ = 0x04 | ((reg & 0x07) << 3);
+    *(u32*)C = (u32)(((u64)ptr) & 0xFFFFFFFF);
+    C += 4;
+}
+
+
+void LoadReg32(u8 areg, void* ptr)
+{
+    u8 reg = RegMapping[areg];
+    if (reg == 0xFF)
+    {
+        // TODO
+    }
+    else
+        MOV_Mem_Reg32(ptr, reg);
+}
+
+void StoreReg32(u8 areg, void* ptr)
+{
+    u8 reg = RegMapping[areg];
+    if (reg == 0xFF)
+    {
+        // TODO
+    }
+    else
+        MOV_Reg32_Mem(reg, ptr);
+}
+
+
+void BeginBlock(ARM* cpu)
+{
+    PUSH(EBX);
+    PUSH(EBP);
+    PUSH(R12D);
+    PUSH(R13D);
+    PUSH(R14D);
+    PUSH(R15D);
+#ifdef __WIN32__
+    PUSH(EDI);
+    PUSH(ESI);
+#endif // __WIN32__
+
+    for (int i = 0; i < 14; i++)
+        LoadReg32(i, &cpu->R[i]);
+}
+
+void EndBlock(ARM* cpu)
+{
+    for (int i = 0; i < 14; i++)
+        StoreReg32(i, &cpu->R[i]);
+
+#ifdef __WIN32__
+    POP(ESI);
+    POP(EDI);
+#endif // __WIN32__
+    POP(R15D);
+    POP(R14D);
+    POP(R13D);
+    POP(R12D);
+    POP(EBP);
+    POP(EBX);
+
+    RET();
+}
+
+
+void CompileCode(ARM* cpu, u32 addr, u8* buf)
+{
+    SetCodeBuffer(buf);
+
+    BeginBlock(cpu);
+
+    // translate actual code
+    while (C < (CodeBuffer + kBlockSize - 96))
+    {
+        //
+    }
+
+    // ~96 bytes
+    EndBlock(cpu);
 }
 
 
