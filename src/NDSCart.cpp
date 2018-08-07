@@ -995,7 +995,7 @@ bool LoadROM(const char* path, bool direct)
 
     if (*(u32*)&CartROM[0x20] < 0x4000)
     {
-        ApplyDLDIPatch();
+        //ApplyDLDIPatch();
     }
 
     if (direct)
