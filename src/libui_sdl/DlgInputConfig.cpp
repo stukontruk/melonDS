@@ -195,13 +195,6 @@ int OnAreaKeyEvent(uiAreaHandler* handler, uiArea* area, uiAreaKeyEvent* evt)
     if (dlg->pollid < 0)
         return 0;
 
-    if (evt->Scancode == 0x1D) // CTRL
-        return 1;
-    if (evt->Scancode == 0x38) // ALT
-        return 1;
-    if (evt->Scancode == 0x2A) // SHIFT
-        return 1;
-
     if (dlg->pollid > 12)
     {
         if (dlg->pollid < 0x100) return 0;
